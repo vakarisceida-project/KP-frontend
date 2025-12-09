@@ -32,11 +32,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.pirmas.api.RegistrationRequest
+import com.example.pirmas.api.RegistrationResponse
+import com.example.pirmas.api.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
@@ -149,7 +162,28 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
             )
 
             Button(
-                onClick = onTestiClick,
+                onClick = {
+                    val request = RegistrationRequest(
+                        email = email,
+                        password = password,
+                        firstName = firstName,
+                        lastName = lastName
+                    )
+
+                    RetrofitClient.apiService.registerUser(request).enqueue(object : Callback<RegistrationResponse> {
+                        override fun onResponse(call: Call<RegistrationResponse>, response: Response<RegistrationResponse>) {
+                            if (response.isSuccessful) {
+                                val user = response.body()?.user
+                                Toast.makeText(context, "Registered: ${user?.email}", Toast.LENGTH_SHORT).show()
+                                onTestiClick()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<RegistrationResponse>, t: Throwable) {
+                            Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                },
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF000000),
