@@ -1,4 +1,4 @@
-package com.example.pirmas
+package com.example.pirmas.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +35,11 @@ import androidx.compose.ui.unit.sp
 import com.example.pirmas.ui.theme.PirmasTheme
 
 @Composable
-fun Prisijungimas(modifier: Modifier = Modifier, onNeturiPaskyrosClick: () -> Unit) {
+fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf(false) }
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
@@ -76,7 +78,7 @@ fun Prisijungimas(modifier: Modifier = Modifier, onNeturiPaskyrosClick: () -> Un
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "PRISIJUNKITE",
+                text = "UŽSIREGISTRUOKITE",
                 textAlign = TextAlign.Center,
                 lineHeight = 32.sp,
                 color = Color.Black,
@@ -87,7 +89,7 @@ fun Prisijungimas(modifier: Modifier = Modifier, onNeturiPaskyrosClick: () -> Un
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Įveskite savo prisijungimo vardą ir slaptažodį",
+                text = "Sugalvokite savo prisijungimo vardą ir slaptažodį",
                 textAlign = TextAlign.Center,
                 color = Color.Black,
                 fontSize = 15.sp,
@@ -130,40 +132,62 @@ fun Prisijungimas(modifier: Modifier = Modifier, onNeturiPaskyrosClick: () -> Un
                     cursorColor = Color.Black
                 )
             )
-            Button(
-                onClick = onNeturiPaskyrosClick,
-                shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF000000),
-                    contentColor = Color.White
-                ),
-                modifier = Modifier
-                   // .align(Alignment.Center)
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
+            Spacer(modifier = Modifier.height(16.dp))
 
-            ) {
-                Text(text = "Neturi paskyros? Susikurk!", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Pakartokite slaptažodį") },
+                visualTransformation = PasswordVisualTransformation(),
+                isError = passwordError,
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.DarkGray,
+                    focusedLabelColor = Color.Black,
+                    unfocusedLabelColor = Color.DarkGray,
+                    cursorColor = Color.Black
+                )
+            )
+
+            if (passwordError) {
+                Text(
+                    text = "Slaptažodžiai nesutampa",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
-                onClick = { /* TODO: Implement login logic */ },
+                onClick = {
+                    if (password == confirmPassword) {
+                        passwordError = false
+                        onTestiClick()
+                    } else {
+                        passwordError = true
+                    }
+                },
+                enabled = username.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank(),
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF000000),
                     contentColor = Color.White
                 ),
                 modifier = Modifier
-                   // .align(Alignment.BottomCenter)
+                    // .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .height(80.dp)
                     .padding(horizontal = 20.dp, vertical = 12.dp)
 
             ) {
-                Text(text = "Prisijungti", fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = "Tęsti", fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
             }
             Text(
-                text = "Spausdami prisijungti jūs sutinkate su mūsų privatumo politika ir slapukais",
+                text = "Spausdami tęsti jūs sutinkate su mūsų privatumo politika ir slapukais",
                 textAlign = TextAlign.Center,
                 color = Color.Black,
                 fontSize = 15.sp,
@@ -178,8 +202,8 @@ fun Prisijungimas(modifier: Modifier = Modifier, onNeturiPaskyrosClick: () -> Un
 
 @Preview(showBackground = true)
 @Composable
-fun PrisijungimasPreview() {
+fun RegistracijaPreview() {
     PirmasTheme {
-        Prisijungimas(onNeturiPaskyrosClick = {})
+        Registracija()
     }
 }

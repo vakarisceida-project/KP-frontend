@@ -7,9 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pirmas.ui.screens.KojosScreen
+import com.example.pirmas.ui.screens.Pagrindinis
+import com.example.pirmas.ui.screens.PoilsisScreen
+import com.example.pirmas.ui.screens.Pradzia
+import com.example.pirmas.ui.screens.Prisijungimas
+import com.example.pirmas.ui.screens.PullScreen
+import com.example.pirmas.ui.screens.PushScreen
+import com.example.pirmas.ui.screens.Registracija
+import com.example.pirmas.ui.screens.Registracija2
+import com.example.pirmas.ui.screens.Tvarkarastis
 import com.example.pirmas.ui.theme.PirmasTheme
-import com.example.pirmas.ui.theme.Registracija
-import com.example.pirmas.ui.theme.Registracija2
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,13 +38,34 @@ fun Navigation() {
             Pradzia(onStartClick = { navController.navigate("prisijungimas") })
         }
         composable("prisijungimas") {
-            Prisijungimas(onNeturiPaskyrosClick = { navController.navigate("registracija") })
+            Prisijungimas(
+                onNeturiPaskyrosClick = { navController.navigate("registracija") },
+                onLoginSuccess = { navController.navigate("pagrindinis") }
+            )
         }
         composable("registracija") {
             Registracija(onTestiClick = {navController.navigate("registracija2")})
         }
         composable("registracija2") {
-            Registracija2()
+            Registracija2(onRegistrationComplete = { navController.navigate("pagrindinis") })
         }
+        composable("pagrindinis") {
+            Pagrindinis(onTvarkarastisClick = { navController.navigate("tvarkarastis") })
+        }
+        composable("tvarkarastis") {
+            Tvarkarastis(onBackClick = { navController.popBackStack() }) {
+                workout ->
+                when (workout) {
+                    "Kojos" -> navController.navigate("kojos")
+                    "Stumimas" -> navController.navigate("push")
+                    "Traukimas" -> navController.navigate("pull")
+                    "Poilsis" -> navController.navigate("poilsis")
+                }
+            }
+        }
+        composable("kojos") { KojosScreen() }
+        composable("push") { PushScreen() }
+        composable("pull") { PullScreen() }
+        composable("poilsis") { PoilsisScreen() }
     }
 }

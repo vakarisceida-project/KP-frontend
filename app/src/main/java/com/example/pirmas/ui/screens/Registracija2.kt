@@ -1,9 +1,10 @@
-package com.example.pirmas.ui.theme
+package com.example.pirmas.ui.screens
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +20,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,19 +38,38 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pirmas.R
+import com.example.pirmas.ui.theme.PirmasTheme
+import com.example.pirmas.viewmodels.RegistrationViewModel
+
+// Data classes to hold the state
+data class Workout(@DrawableRes val imageRes: Int, val name: String)
+data class ScheduleDay(val dayName: String, var workout: Workout? = null)
 
 @Composable
-fun Registracija2(modifier: Modifier = Modifier) {
-    var weight by remember { mutableStateOf("") }
-    var height by remember { mutableStateOf("") }
+fun Registracija2(
+    modifier: Modifier = Modifier,
+    viewModel: RegistrationViewModel = viewModel(),
+    onRegistrationComplete: () -> Unit
+) {
+    val weight by viewModel.weight.collectAsState()
+    val height by viewModel.height.collectAsState()
+    val schedule by viewModel.schedule.collectAsState()
+    val registrationError by viewModel.registrationError.collectAsState()
+
+    // State for the schedule and available workouts
+    val availableWorkouts = remember {
+        listOf(
+            Workout(R.drawable.legs, "Kojos"),
+            Workout(R.drawable.push, "Stumimas"),
+            Workout(R.drawable.pull, "Traukimas"),
+            Workout(R.drawable.poilsis, "Poilsis"),
+        )
+    }
 
     val gradient = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFFFF5A49),
-            Color(0xFFFF6AA8),
-            Color(0xFF7A3BE6),
-        )
+        colors = listOf(Color(0xFFFF5A49), Color(0xFFFF6AA8), Color(0xFF7A3BE6))
     )
 
     Column(
@@ -75,7 +95,7 @@ fun Registracija2(modifier: Modifier = Modifier) {
         ) {
             OutlinedTextField(
                 value = weight,
-                onValueChange = { weight = it },
+                onValueChange = { viewModel.onWeightChange(it) },
                 label = { Text("Svoris (kg)") },
                 modifier = Modifier.weight(1f),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -85,7 +105,7 @@ fun Registracija2(modifier: Modifier = Modifier) {
             )
             OutlinedTextField(
                 value = height,
-                onValueChange = { height = it },
+                onValueChange = { viewModel.onHeightChange(it) },
                 label = { Text("Ūgis (cm)") },
                 modifier = Modifier.weight(1f),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -106,18 +126,17 @@ fun Registracija2(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Savaitės kalendoriaus išdėstymas
+        // Weekly calendar now reads from the state
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            val days = listOf("P", "A", "T", "K", "Pn", "Š", "S")
-            days.forEach { day ->
+            schedule.forEach { day ->
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(text = day, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text(text = day.dayName, fontWeight = FontWeight.Bold, color = Color.Black)
                     Box(
                         modifier = Modifier
                             .size(48.dp)
@@ -125,7 +144,13 @@ fun Registracija2(modifier: Modifier = Modifier) {
                             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Čia bus įkelta treniruotė
+                        day.workout?.let {
+                            Image(
+                                painter = painterResource(id = it.imageRes),
+                                contentDescription = it.name,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -142,63 +167,90 @@ fun Registracija2(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Velkamų treniruočių piktogramos (placeholder'iai)
+        // Workout placeholders with a click action to test state updates
         Row(
-            horizontalArrangement = Arrangement.spacedBy(32.dp)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            WorkoutPlaceholder(imageRes = R.drawable.legs, contentDescription = "Kojos")
-            WorkoutPlaceholder(imageRes = R.drawable.push, contentDescription = "Stumimas")
-
-            // Įdėkite daugiau treniruočių tipų pagal poreikį
+            availableWorkouts.take(2).forEach { workout ->
+                WorkoutPlaceholder(workout = workout) {
+                    // Find first empty day and assign the workout
+                    val dayIndex = schedule.indexOfFirst { it.workout == null }
+                    if (dayIndex != -1) {
+                        val newList = schedule.toMutableList()
+                        newList[dayIndex] = schedule[dayIndex].copy(workout = workout)
+                        viewModel.onScheduleChange(newList)
+                    }
+                }
+            }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Row(
-            horizontalArrangement = Arrangement.spacedBy(32.dp)
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-
-            WorkoutPlaceholder(imageRes = R.drawable.pull, contentDescription = "Traukimas")
-            WorkoutPlaceholder(imageRes = R.drawable.poilsis, contentDescription = "Poilsis")
-            // Įdėkite daugiau treniruočių tipų pagal poreikį
+            availableWorkouts.drop(2).forEach { workout ->
+                WorkoutPlaceholder(workout = workout) {
+                    val dayIndex = schedule.indexOfFirst { it.workout == null }
+                    if (dayIndex != -1) {
+                        val newList = schedule.toMutableList()
+                        newList[dayIndex] = schedule[dayIndex].copy(workout = workout)
+                        viewModel.onScheduleChange(newList)
+                    }
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        registrationError?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
 
+        Spacer(modifier = Modifier.weight(1f)) // Pushes button to bottom
 
         Button(
-            onClick = { /* TODO: Implement login logic */ },
+            onClick = { viewModel.saveProfileAndSchedule(onRegistrationComplete) },
+            enabled = weight.isNotBlank() && height.isNotBlank(),
             shape = RoundedCornerShape(30.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF000000),
                 contentColor = Color.White
             ),
             modifier = Modifier
-                // .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .height(80.dp)
                 .padding(horizontal = 20.dp, vertical = 12.dp)
-
         ) {
-            Text(text = "Tęsti", fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
+            Text(text = "Baigti registraciją", fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
         }
     }
 }
 
 @Composable
-fun WorkoutPlaceholder(@DrawableRes imageRes: Int, contentDescription: String?) {
-    Image(
-        painter = painterResource(id = imageRes),
-        contentDescription = contentDescription,
-        modifier = Modifier
-            .size(90.dp)
-            .clip(CircleShape)
-            .border(2.dp, Color.Gray, CircleShape) // Add a border for better visibility
-    )
+fun WorkoutPlaceholder(workout: Workout, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Image(
+            painter = painterResource(id = workout.imageRes),
+            contentDescription = workout.name,
+            modifier = Modifier
+                .size(90.dp)
+                .clip(CircleShape)
+                .border(2.dp, Color.Gray, CircleShape)
+        )
+        Text(text = workout.name, fontWeight = FontWeight.Bold, color = Color.Black)
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun Registracija2Preview() {
     PirmasTheme {
-        Registracija2()
+        Registracija2(onRegistrationComplete = {})
     }
 }

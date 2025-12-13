@@ -1,4 +1,4 @@
-package com.example.pirmas.ui.theme
+package com.example.pirmas.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +18,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -32,11 +30,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pirmas.ui.theme.PirmasTheme
+import com.example.pirmas.viewmodels.LoginViewModel
 
 @Composable
-fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun Prisijungimas(
+    modifier: Modifier = Modifier,
+    onNeturiPaskyrosClick: () -> Unit,
+    onLoginSuccess: () -> Unit
+) {
+    val viewModel: LoginViewModel = viewModel()
+    val username by viewModel.username.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val loginError by viewModel.loginError.collectAsState()
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
@@ -75,7 +82,7 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "UŽSIREGISTRUOKITE",
+                text = "PRISIJUNKITE",
                 textAlign = TextAlign.Center,
                 lineHeight = 32.sp,
                 color = Color.Black,
@@ -86,7 +93,7 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Sugalvokite savo prisijungimo vardą ir slaptažodį",
+                text = "Įveskite savo prisijungimo vardą ir slaptažodį",
                 textAlign = TextAlign.Center,
                 color = Color.Black,
                 fontSize = 15.sp,
@@ -97,7 +104,7 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
 
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = { viewModel.onUsernameChange(it) },
                 label = { Text("Prisijungimo vardas") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -115,7 +122,7 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
 
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { viewModel.onPasswordChange(it) },
                 label = { Text("Slaptažodis") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
@@ -129,59 +136,62 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
                     cursorColor = Color.Black
                 )
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Pakartokite slaptažodį") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.DarkGray,
-                    cursorColor = Color.Black
+            loginError?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
-            )
+            }
 
             Button(
-                onClick = onTestiClick,
+                onClick = onNeturiPaskyrosClick,
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF000000),
                     contentColor = Color.White
                 ),
                 modifier = Modifier
-                    // .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .height(80.dp)
                     .padding(horizontal = 20.dp, vertical = 12.dp)
 
             ) {
-                Text(text = "Tęsti", fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = "Neturi paskyros? Susikurk!", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            }
+            Button(
+                onClick = { viewModel.login(onLoginSuccess) },
+                enabled = username.isNotBlank() && password.isNotBlank(),
+                shape = RoundedCornerShape(30.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF000000),
+                    contentColor = Color.White
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+
+            ) {
+                Text(text = "Prisijungti", fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
             }
             Text(
-                text = "Spausdami tęsti jūs sutinkate su mūsų privatumo politika ir slapukais",
+                text = "Spausdami prisijungti jūs sutinkate su mūsų privatumo politika ir slapukais",
                 textAlign = TextAlign.Center,
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
             )
         }
-
-
     }
 }
 
 
 @Preview(showBackground = true)
 @Composable
-fun RegistracijaPreview() {
+fun PrisijungimasPreview() {
     PirmasTheme {
-        Registracija()
+        Prisijungimas(onNeturiPaskyrosClick = {}, onLoginSuccess = {})
     }
 }
