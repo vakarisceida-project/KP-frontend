@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.pirmas.ui.screens.KojosScreen
 import com.example.pirmas.ui.screens.Pagrindinis
 import com.example.pirmas.ui.screens.PoilsisScreen
@@ -48,14 +50,29 @@ fun Navigation() {
             )
         }
         composable("registracija") {
-            Registracija(onTestiClick = {navController.navigate("registracija2")})
-        }
-        composable("registracija2") {
-            Registracija2(onRegistrationComplete = {
-                navController.navigate("pagrindinis") {
-                    popUpTo("pradzia") { inclusive = true }
-                }
+            Registracija(onTestiClick = { username, password ->
+                navController.navigate("registracija2/$username/$password")
             })
+        }
+        composable(
+            route = "registracija2/{username}/{password}",
+            arguments = listOf(
+                navArgument("username") { type = NavType.StringType },
+                navArgument("password") { type = NavType.StringType }
+            )
+        ) {
+            backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            val password = backStackEntry.arguments?.getString("password") ?: ""
+            Registracija2(
+                username = username,
+                password = password,
+                onRegistrationComplete = {
+                    navController.navigate("pagrindinis") {
+                        popUpTo("pradzia") { inclusive = true }
+                    }
+                }
+            )
         }
         composable("pagrindinis") {
             Pagrindinis(onTvarkarastisClick = { navController.navigate("tvarkarastis") })

@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.example.pirmas.ui.theme.PirmasTheme
 
 @Composable
-fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
+fun Registracija(modifier: Modifier = Modifier, onTestiClick: (String, String) -> Unit = { _, _ -> }) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -166,7 +166,7 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
                 onClick = {
                     if (password == confirmPassword) {
                         passwordError = false
-                        onTestiClick()
+                        onTestiClick(username, password)
                     } else {
                         passwordError = true
                     }

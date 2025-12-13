@@ -1,6 +1,8 @@
 package com.example.pirmas.data
 
-data class UserProfileRequest(
+data class FullRegistrationRequest(
+    val username: String,
+    val password: String,
     val weight: String,
     val height: String,
     val schedule: List<ScheduleDayRequest>

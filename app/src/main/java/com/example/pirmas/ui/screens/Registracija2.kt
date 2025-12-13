@@ -51,6 +51,8 @@ data class ScheduleDay(val dayName: String, var workout: Workout? = null)
 fun Registracija2(
     modifier: Modifier = Modifier,
     viewModel: RegistrationViewModel = viewModel(),
+    username: String,
+    password: String,
     onRegistrationComplete: () -> Unit
 ) {
     val weight by viewModel.weight.collectAsState()
@@ -204,7 +206,7 @@ fun Registracija2(
         registrationError?.let {
             Text(
                 text = it,
-                color = MaterialTheme.colorScheme.error,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
@@ -212,7 +214,7 @@ fun Registracija2(
         Spacer(modifier = Modifier.weight(1f)) // Pushes button to bottom
 
         Button(
-            onClick = { viewModel.saveProfileAndSchedule(onRegistrationComplete) },
+            onClick = { viewModel.saveProfileAndSchedule(username, password, onRegistrationComplete) },
             enabled = weight.isNotBlank() && height.isNotBlank(),
             shape = RoundedCornerShape(30.dp),
             colors = ButtonDefaults.buttonColors(
@@ -251,6 +253,6 @@ fun WorkoutPlaceholder(workout: Workout, onClick: () -> Unit) {
 @Composable
 fun Registracija2Preview() {
     PirmasTheme {
-        Registracija2(onRegistrationComplete = {})
+        Registracija2(onRegistrationComplete = {}, username = "test", password = "test")
     }
 }

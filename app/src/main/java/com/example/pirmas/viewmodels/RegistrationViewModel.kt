@@ -3,8 +3,8 @@ package com.example.pirmas.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pirmas.ApiService
+import com.example.pirmas.data.FullRegistrationRequest
 import com.example.pirmas.data.ScheduleDayRequest
-import com.example.pirmas.data.UserProfileRequest
 import com.example.pirmas.ui.screens.ScheduleDay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,19 +41,29 @@ class RegistrationViewModel : ViewModel() {
         _schedule.value = newSchedule
     }
 
-    fun saveProfileAndSchedule(onRegistrationComplete: () -> Unit) {
+    fun saveProfileAndSchedule(
+        username: String,
+        password: String,
+        onRegistrationComplete: () -> Unit
+    ) {
         viewModelScope.launch {
             val scheduleRequest = schedule.first().map {
                 ScheduleDayRequest(it.dayName, it.workout?.name)
             }
-            val userProfile = UserProfileRequest(
+            val registrationRequest = FullRegistrationRequest(
+                username = username,
+                password = password,
                 weight = weight.first(),
                 height = height.first(),
                 schedule = scheduleRequest
             )
             try {
-                apiService.saveUserProfile(userProfile)
-                onRegistrationComplete()
+                val response = apiService.registerUser(registrationRequest)
+                if (response.isSuccessful) {
+                    onRegistrationComplete()
+                } else {
+                    _registrationError.value = "Registracija nepavyko: ${response.message()}"
+                }
             } catch (e: Exception) {
                 _registrationError.value = "Registracija nepavyko: ${e.message}"
             }
