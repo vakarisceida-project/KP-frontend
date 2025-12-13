@@ -2,6 +2,7 @@ package com.example.pirmas.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,7 @@ import com.example.pirmas.R
 import com.example.pirmas.ui.theme.PirmasTheme
 
 @Composable
-fun KojosScreen(modifier: Modifier = Modifier) {
+fun KojosScreen(modifier: Modifier = Modifier, onBackClick: () -> Unit = {}) {
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF7A3BE6), Color(0xFFFF6AA8), Color(0xFFFF5A49))
     )
@@ -61,7 +62,9 @@ fun KojosScreen(modifier: Modifier = Modifier) {
             Image(
                 painter = painterResource(id = R.drawable.legs),
                 contentDescription = "Kojų treniruotė",
-                modifier = Modifier.size(120.dp)
+                modifier = Modifier
+                    .size(120.dp)
+                    .clickable { onBackClick() }
             )
         }
     }
@@ -71,6 +74,6 @@ fun KojosScreen(modifier: Modifier = Modifier) {
 @Composable
 fun KojosScreenPreview() {
     PirmasTheme {
-        KojosScreen()
+        KojosScreen(onBackClick = {})
     }
 }

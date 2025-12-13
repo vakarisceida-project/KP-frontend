@@ -40,14 +40,22 @@ fun Navigation() {
         composable("prisijungimas") {
             Prisijungimas(
                 onNeturiPaskyrosClick = { navController.navigate("registracija") },
-                onLoginSuccess = { navController.navigate("pagrindinis") }
+                onLoginSuccess = {
+                    navController.navigate("pagrindinis") {
+                        popUpTo("pradzia") { inclusive = true }
+                    }
+                }
             )
         }
         composable("registracija") {
             Registracija(onTestiClick = {navController.navigate("registracija2")})
         }
         composable("registracija2") {
-            Registracija2(onRegistrationComplete = { navController.navigate("pagrindinis") })
+            Registracija2(onRegistrationComplete = {
+                navController.navigate("pagrindinis") {
+                    popUpTo("pradzia") { inclusive = true }
+                }
+            })
         }
         composable("pagrindinis") {
             Pagrindinis(onTvarkarastisClick = { navController.navigate("tvarkarastis") })
@@ -63,9 +71,9 @@ fun Navigation() {
                 }
             }
         }
-        composable("kojos") { KojosScreen() }
-        composable("push") { PushScreen() }
-        composable("pull") { PullScreen() }
-        composable("poilsis") { PoilsisScreen() }
+        composable("kojos") { KojosScreen(onBackClick = { navController.popBackStack() }) }
+        composable("push") { PushScreen(onBackClick = { navController.popBackStack() }) }
+        composable("pull") { PullScreen(onBackClick = { navController.popBackStack() }) }
+        composable("poilsis") { PoilsisScreen(onBackClick = { navController.popBackStack() }) }
     }
 }
