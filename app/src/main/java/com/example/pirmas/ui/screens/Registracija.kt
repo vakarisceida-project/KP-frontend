@@ -1,4 +1,4 @@
-package com.example.pirmas.ui.screens
+package com.example.pirmas.ui.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,14 +32,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pirmas.ui.theme.PirmasTheme
+import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.pirmas.api.RegistrationRequest
+import com.example.pirmas.api.RegistrationResponse
+import com.example.pirmas.api.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var passwordError by remember { mutableStateOf(false) }
+    var email by remember { mutableStateOf("") }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     val gradient = Brush.verticalGradient(
         colors = listOf(
@@ -135,11 +145,10 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
+                value = password,
+                onValueChange = { password = it },
                 label = { Text("Pakartokite slaptažodį") },
                 visualTransformation = PasswordVisualTransformation(),
-                isError = passwordError,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
@@ -152,26 +161,29 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: () -> Unit = {}) {
                 )
             )
 
-            if (passwordError) {
-                Text(
-                    text = "Slaptažodžiai nesutampa",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Button(
                 onClick = {
-                    if (password == confirmPassword) {
-                        passwordError = false
-                        onTestiClick()
-                    } else {
-                        passwordError = true
-                    }
+                    val request = RegistrationRequest(
+                        email = email,
+                        password = password,
+                        firstName = firstName,
+                        lastName = lastName
+                    )
+
+                    RetrofitClient.apiService.registerUser(request).enqueue(object : Callback<RegistrationResponse> {
+                        override fun onResponse(call: Call<RegistrationResponse>, response: Response<RegistrationResponse>) {
+                            if (response.isSuccessful) {
+                                val user = response.body()?.user
+                                Toast.makeText(context, "Registered: ${user?.email}", Toast.LENGTH_SHORT).show()
+                                onTestiClick()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<RegistrationResponse>, t: Throwable) {
+                            Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 },
-                enabled = username.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank(),
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF000000),
