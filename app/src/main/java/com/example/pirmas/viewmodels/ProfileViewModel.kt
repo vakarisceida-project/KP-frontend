@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pirmas.ApiService
 import com.example.pirmas.R
+import com.example.pirmas.data.ProfileResponse
 import com.example.pirmas.data.ScheduleDayRequest
 import com.example.pirmas.data.UpdateProfileRequest
 import com.example.pirmas.ui.screens.ScheduleDay
@@ -48,16 +49,19 @@ class ProfileViewModel : ViewModel() {
             try {
                 val response = apiService.getProfile()
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        _username.value = it.username
-                        _weight.value = it.weight
-                        _height.value = it.height
+                    val profileResponse = response.body()
+                    if (profileResponse != null) {
+                        _username.value = profileResponse.username
+                        _weight.value = profileResponse.weight
+                        _height.value = profileResponse.height
 
-                        val dayNames = listOf("P", "A", "T", "K", "Pn", "Š", "S")
-                        val newSchedule = dayNames.map {
-                            dayName ->
-                            val workoutForDay = it.schedule.find { it.day == dayName }?.workout
-                            val workoutObject = availableWorkouts.find { it.name == workoutForDay }
+                        val workoutMapByName = availableWorkouts.associateBy { it.name }
+                        val scheduleFromBackend = profileResponse.schedule.associateBy({ it.day }, { it.workout })
+
+                        val dayShortNames = listOf("P", "A", "T", "K", "Pn", "Š", "S")
+                        val newSchedule = dayShortNames.map { dayName ->
+                            val workoutName = scheduleFromBackend[dayName]
+                            val workoutObject = workoutMapByName[workoutName]
                             ScheduleDay(dayName, workoutObject)
                         }
                         _schedule.value = newSchedule
@@ -79,6 +83,11 @@ class ProfileViewModel : ViewModel() {
 
     fun onScheduleChange(newSchedule: List<ScheduleDay>) {
         _schedule.value = newSchedule
+    }
+
+    fun clearSchedule() {
+        val clearedSchedule = _schedule.value.map { it.copy(workout = null) }
+        _schedule.value = clearedSchedule
     }
 
     fun saveChanges() {

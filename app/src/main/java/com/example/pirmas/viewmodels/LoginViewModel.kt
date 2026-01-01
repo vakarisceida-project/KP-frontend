@@ -3,6 +3,7 @@ package com.example.pirmas.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pirmas.ApiService
+import com.example.pirmas.TokenManager
 import com.example.pirmas.data.LoginRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +35,10 @@ class LoginViewModel : ViewModel() {
             try {
                 val response = apiService.login(LoginRequest(_username.value, _password.value))
                 if (response.isSuccessful && response.body()?.success == true) {
-                    onLoginSuccess()
+                    response.body()?.token?.let {
+                        TokenManager.token = it // Išsaugome token
+                        onLoginSuccess()
+                    }
                 } else if (response.code() == 401) {
                     _loginError.value = "Prisijungimo vardas arba slaptažodis nesutampa"
                 } else {
