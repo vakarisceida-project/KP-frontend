@@ -10,10 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.pirmas.ui.screens.KojosScreen
+import com.example.pirmas.ui.screens.NustatymaiScreen
 import com.example.pirmas.ui.screens.Pagrindinis
 import com.example.pirmas.ui.screens.PoilsisScreen
 import com.example.pirmas.ui.screens.Pradzia
 import com.example.pirmas.ui.screens.Prisijungimas
+import com.example.pirmas.ui.screens.ProfilioRedagavimasScreen
 import com.example.pirmas.ui.screens.PullScreen
 import com.example.pirmas.ui.screens.PushScreen
 import com.example.pirmas.ui.screens.Registracija
@@ -75,7 +77,10 @@ fun Navigation() {
             )
         }
         composable("pagrindinis") {
-            Pagrindinis(onTvarkarastisClick = { navController.navigate("tvarkarastis") })
+            Pagrindinis(
+                onTvarkarastisClick = { navController.navigate("tvarkarastis") },
+                onNustatymaiClick = { navController.navigate("nustatymai") }
+            )
         }
         composable("tvarkarastis") {
             Tvarkarastis(onBackClick = { navController.popBackStack() }) {
@@ -87,6 +92,20 @@ fun Navigation() {
                     "Poilsis" -> navController.navigate("poilsis")
                 }
             }
+        }
+        composable("nustatymai") {
+            NustatymaiScreen(
+                onBackClick = { navController.popBackStack() },
+                onLogoutClick = {
+                    navController.navigate("pradzia") {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
+                },
+                onProfileClick = { navController.navigate("profilio_redagavimas") }
+            )
+        }
+        composable("profilio_redagavimas") {
+            ProfilioRedagavimasScreen(onBackClick = { navController.popBackStack() })
         }
         composable("kojos") { KojosScreen(onBackClick = { navController.popBackStack() }) }
         composable("push") { PushScreen(onBackClick = { navController.popBackStack() }) }

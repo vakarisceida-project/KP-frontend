@@ -4,16 +4,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,7 +35,11 @@ import com.example.pirmas.R
 import com.example.pirmas.ui.theme.PirmasTheme
 
 @Composable
-fun Pagrindinis(modifier: Modifier = Modifier, onTvarkarastisClick: () -> Unit = {}) {
+fun Pagrindinis(
+    modifier: Modifier = Modifier, 
+    onTvarkarastisClick: () -> Unit = {},
+    onNustatymaiClick: () -> Unit = {}
+) {
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF7A3BE6), Color(0xFFFF6AA8), Color(0xFFFF5A49))
     )
@@ -39,33 +49,50 @@ fun Pagrindinis(modifier: Modifier = Modifier, onTvarkarastisClick: () -> Unit =
             .fillMaxSize()
             .background(gradient)
             .systemBarsPadding()
-            .padding(top = 32.dp, start = 16.dp, end = 16.dp)
     ) {
-        Button(
-            onClick = onTvarkarastisClick,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.Black
-            ),
-            modifier = Modifier.fillMaxWidth()
+        // Nustatymų mygtukas viršuje dešinėje
+        IconButton(
+            onClick = onNustatymaiClick,
+            modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Nustatymai",
+                modifier = Modifier.size(50.dp),
+                tint = Color.Black
+            )
+        }
+
+        // Centrinis turinys
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = onTvarkarastisClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Black
+                ),
             ) {
-                Text(
-                    text = "TVARKARAŠTIS",
-                    fontSize = 34.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.ziuri),
-                    contentDescription = "Tvarkaraštis icon",
-                    modifier = Modifier.size(60.dp)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "TVARKARAŠTIS",
+                        fontSize = 34.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.ziuri),
+                        contentDescription = "Tvarkaraštis icon",
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
             }
         }
     }

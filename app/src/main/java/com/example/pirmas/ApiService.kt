@@ -3,13 +3,15 @@ package com.example.pirmas
 import com.example.pirmas.data.FullRegistrationRequest
 import com.example.pirmas.data.LoginRequest
 import com.example.pirmas.data.LoginResponse
-import com.example.pirmas.data.ScheduleResponse
+import com.example.pirmas.data.ProfileResponse
+import com.example.pirmas.data.UpdateProfileRequest
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface ApiService {
     @POST("register")
@@ -18,8 +20,11 @@ interface ApiService {
     @POST("login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
-    @GET("schedule")
-    suspend fun getSchedule(): Response<ScheduleResponse>
+    @GET("profile")
+    suspend fun getProfile(): Response<ProfileResponse>
+
+    @PUT("profile")
+    suspend fun updateProfile(@Body updateProfileRequest: UpdateProfileRequest): Response<Unit>
 
     companion object {
         private const val BASE_URL = "http://10.0.2.2:3000/"

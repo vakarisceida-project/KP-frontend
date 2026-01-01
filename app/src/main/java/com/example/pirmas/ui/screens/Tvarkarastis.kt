@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pirmas.R
 import com.example.pirmas.ui.theme.PirmasTheme
-import com.example.pirmas.viewmodels.ScheduleViewModel
+import com.example.pirmas.viewmodels.ProfileViewModel
 
 @Composable
 fun Tvarkarastis(
     modifier: Modifier = Modifier,
-    viewModel: ScheduleViewModel = viewModel(),
+    viewModel: ProfileViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     onDayClick: (String) -> Unit = {}
 ) {
@@ -81,30 +81,28 @@ fun Tvarkarastis(
             }
             Spacer(modifier = Modifier.height(32.dp))
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                dayNames.forEach { dayName ->
-                    val workout = schedule.find { it.day == dayName }?.workout
+                val displaySchedule = if (schedule.isEmpty()) {
+                    listOf("P", "A", "T", "K", "Pn", "Š", "S").map { ScheduleDay(it) }
+                } else {
+                    schedule
+                }
+                displaySchedule.forEach { day ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { workout?.let { onDayClick(it) } }
+                        modifier = Modifier.clickable { day.workout?.name?.let { onDayClick(it) } }
                     ) {
                         Image(
                             painter = painterResource(
-                                id = when (workout) {
-                                    "Kojos" -> R.drawable.legs
-                                    "Stumimas" -> R.drawable.push
-                                    "Traukimas" -> R.drawable.pull
-                                    "Poilsis" -> R.drawable.poilsis
-                                    else -> R.drawable.poilsis // Default or empty day icon
-                                }
+                                id = day.workout?.imageRes ?: R.drawable.poilsis
                             ),
-                            contentDescription = workout,
+                            contentDescription = day.workout?.name,
                             modifier = Modifier
                                 .size(60.dp)
                                 .clip(CircleShape)
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
-                            text = dayName.uppercase(),
+                            text = day.dayName.uppercase(),
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
