@@ -28,7 +28,7 @@ interface ApiService {
     suspend fun updateProfile(@Body updateProfileRequest: UpdateProfileRequest): Response<Unit>
 
     companion object {
-        private const val BASE_URL = "http://10.0.2.2:3000/auth/"
+        private const val BASE_URL = "https://gym-backend-dev.onrender.com/auth/"
 
         fun create(): ApiService {
             val client = OkHttpClient.Builder()
