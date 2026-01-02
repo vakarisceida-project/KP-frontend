@@ -140,7 +140,9 @@ fun ProfilioRedagavimasScreen(
                 modifier = Modifier.weight(1f),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black, // Pataisyta
+                    unfocusedTextColor = Color.Black // Pataisyta
                 )
             )
             OutlinedTextField(
@@ -150,7 +152,9 @@ fun ProfilioRedagavimasScreen(
                 modifier = Modifier.weight(1f),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black, // Pataisyta
+                    unfocusedTextColor = Color.Black // Pataisyta
                 )
             )
         }

@@ -43,10 +43,6 @@ import com.example.pirmas.R
 import com.example.pirmas.ui.theme.PirmasTheme
 import com.example.pirmas.viewmodels.RegistrationViewModel
 
-// Data classes to hold the state
-data class Workout(@DrawableRes val imageRes: Int, val name: String)
-data class ScheduleDay(val dayName: String, var workout: Workout? = null)
-
 @Composable
 fun Registracija2(
     modifier: Modifier = Modifier,
@@ -102,7 +98,9 @@ fun Registracija2(
                 modifier = Modifier.weight(1f),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
             OutlinedTextField(
@@ -112,7 +110,9 @@ fun Registracija2(
                 modifier = Modifier.weight(1f),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
         }
@@ -228,24 +228,6 @@ fun Registracija2(
         ) {
             Text(text = "Baigti registraciją", fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
         }
-    }
-}
-
-@Composable
-fun WorkoutPlaceholder(workout: Workout, onClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        Image(
-            painter = painterResource(id = workout.imageRes),
-            contentDescription = workout.name,
-            modifier = Modifier
-                .size(90.dp)
-                .clip(CircleShape)
-                .border(2.dp, Color.Gray, CircleShape)
-        )
-        Text(text = workout.name, fontWeight = FontWeight.Bold, color = Color.Black)
     }
 }
 

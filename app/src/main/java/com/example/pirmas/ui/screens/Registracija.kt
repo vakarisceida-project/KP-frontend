@@ -106,11 +106,8 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: (String, String) -
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.DarkGray,
-                    cursorColor = Color.Black
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
@@ -125,11 +122,8 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: (String, String) -
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.DarkGray,
-                    cursorColor = Color.Black
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -144,11 +138,8 @@ fun Registracija(modifier: Modifier = Modifier, onTestiClick: (String, String) -
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.DarkGray,
-                    cursorColor = Color.Black
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 

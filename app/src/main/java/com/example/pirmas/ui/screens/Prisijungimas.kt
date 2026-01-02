@@ -110,11 +110,8 @@ fun Prisijungimas(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.DarkGray,
-                    cursorColor = Color.Black
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
@@ -129,11 +126,8 @@ fun Prisijungimas(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White,
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.DarkGray,
-                    focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.DarkGray,
-                    cursorColor = Color.Black
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
                 )
             )
 
